@@ -5,7 +5,7 @@ namespace modules\usage;
 use diversen\upload;
 use diversen\html;
 use diversen\lang;
-
+use diversen\session;
 
 use modules\image\size as image;
 use modules\video\size as video;
@@ -22,7 +22,7 @@ class module {
 
         
         $b = new book();
-        $books = $b->getUserBooks();
+        $books = $b->getUserBooks(session::getUserId());
         
         $v = new video();
         $i = new image();
