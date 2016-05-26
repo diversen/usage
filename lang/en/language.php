@@ -10,4 +10,5 @@ $LANG['Usage'] = 'Usage';
 
 $LANG['Videos '] = 'Videos ';
 $LANG['Images '] = 'Images ';
+$LANG['Files '] = 'Files ';
 $LANG['Total'] = 'Total';
