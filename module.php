@@ -26,13 +26,13 @@ class module {
         $f = new \modules\files\size();
         
         $total = 0;
-        
+        /*
         $str = cache::get('usage', session::getUserId(), 60*60*24);
         if ($str) {
             echo $str;
             return;
-        }
-        
+        }*/
+        $str = '';
         foreach($books as $book) {
 
             $title = views::getBookLink($book);
@@ -61,7 +61,7 @@ class module {
         }
         
         $str.= lang::translate('Total') . ' ' . upload::bytesToGreek($total);
-        cache::set('usage', session::getUserId(), $str);
+        // cache::set('usage', session::getUserId(), $str);
         echo $str;
         
     }
