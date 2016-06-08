@@ -6,7 +6,7 @@ use diversen\upload;
 use diversen\html;
 use diversen\lang;
 use diversen\session;
-use diversen\cache;
+// use diversen\cache;
 
 use modules\content\book\views;
 
