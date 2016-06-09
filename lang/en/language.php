@@ -8,7 +8,8 @@ $LANG['Usage'] = 'Usage';
 
 // Translation of file modules/usage/module.php
 
-$LANG['Videos '] = 'Videos ';
-$LANG['Images '] = 'Images ';
-$LANG['Files '] = 'Files ';
+$LANG['Book title'] = 'Book title';
+$LANG['Videos'] = 'Videos';
+$LANG['Images'] = 'Images';
+$LANG['Files'] = 'Files';
 $LANG['Total'] = 'Total';

@@ -37,11 +37,11 @@ class module {
         $str = '';
         $str.= table::tableBegin(array('class' => 'uk-table'));
         $str.= table::trBegin();
-        $str.= table::td(lang::translate('Book title'));
-        $str.= table::td(lang::translate('Videos'));
-        $str.= table::td(lang::translate('Images'));
-        $str.= table::td(lang::translate('Files'));
-        $str.= table::td(lang::translate('Total'));
+        $str.= table::th(lang::translate('Book title'));
+        $str.= table::th(lang::translate('Videos'));
+        $str.= table::th(lang::translate('Images'));
+        $str.= table::th(lang::translate('Files'));
+        $str.= table::th(lang::translate('Total'));
         $str.= table::trEnd();
         foreach($books as $book) {
             $str.= table::trBegin();
