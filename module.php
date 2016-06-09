@@ -1,19 +1,21 @@
 <?php
 
 namespace modules\usage;
-
-use diversen\upload;
-use diversen\html;
-use diversen\lang;
-use diversen\session;
 // use diversen\cache;
 
+
+use diversen\html;
+use diversen\html\table;
+use diversen\lang;
+use diversen\moduleloader;
+use diversen\session;
+use diversen\upload;
 use modules\content\book\views;
 
 class module {
     
     public function __construct() {
-        \diversen\moduleloader::setModuleIniSettings('content');
+        moduleloader::setModuleIniSettings('content');
     }
     
     public function indexAction () {
@@ -33,35 +35,53 @@ class module {
             return;
         }*/
         $str = '';
+        $str.= table::tableBegin(array('class' => 'uk-table'));
+        $str.= table::trBegin();
+        $str.= table::td(lang::translate('Book title'));
+        $str.= table::td(lang::translate('Videos'));
+        $str.= table::td(lang::translate('Images'));
+        $str.= table::td(lang::translate('Files'));
+        $str.= table::td(lang::translate('Total'));
+        $str.= table::trEnd();
         foreach($books as $book) {
-
+            $str.= table::trBegin();
+            
             $title = views::getBookLink($book);
-            $str.= html::getHeadline($title, 'h3');
+            $str.= table::td($title); // html::getHeadline($title, 'h3');
             
             // Video blob
             $v_b = $v->getFilesSizeFromParentId('content_book', $book['id']);
             $total+= $v_b;
             
-            $str.= upload::bytesToGreek($v_b) . " (" . lang::translate('Videos ') . ")";
-            $str.= "<br />";
+            $str.= table::td(upload::bytesToGreek($v_b));
+// league/flysystem-azure
             
             // Image blob
             $i_b = $i->getBlobsSizeFromParentId($book['id']);
             $total+= $i_b;
             
-            $str.= upload::bytesToGreek($i_b) . ' (' . lang::translate('Images ') . ')';
-            $str.= "<br />";
+            $str.= table::td(upload::bytesToGreek($i_b));
+            //$str.= "<br />";
             
             // Files blob
             $f_b = $f->getBlobsSizeFromParentId($book['id']);
             $total+= $f_b;
             
-            $str.= upload::bytesToGreek($f_b) . ' (' . lang::translate('Files ') . ')';           
-            $str.= "<hr />";
+            $str.= table::td(upload::bytesToGreek($f_b));
+            $str.= table::td('&nbsp;');
+            // $str.= "<hr />";
+            $str.= table::trEnd();
         }
         
-        $str.= lang::translate('Total') . ' ' . upload::bytesToGreek($total);
+        $str.= table::trBegin();
+        $str.= table::td();
+        $str.= table::td();
+        $str.= table::td();
+        $str.= table::td();
+        $str.= table::td(upload::bytesToGreek($total));
+        $str.= table::trEnd();
         // cache::set('usage', session::getUserId(), $str);
+        $str.= "</table>";
         echo $str;
         
     }
