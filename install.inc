@@ -7,5 +7,10 @@ $_INSTALL['ROUTES'][] = array ('#/userinfo/usage/index#'=>
     array ('method' => 'usage::indexAction')
 );
 
-// Just to add translation
+// Example route
+$_INSTALL['ROUTES'][] = array ('#/userinfo/usage/total#'=>
+    array ('method' => 'usage::totalAction')
+);
+
+// Add translation
 lang::translate('Usage');
