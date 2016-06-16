@@ -3,8 +3,6 @@
 namespace modules\usage;
 use diversen\cache;
 
-
-use diversen\html;
 use diversen\html\table;
 use diversen\lang;
 use diversen\moduleloader;
