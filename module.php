@@ -194,9 +194,4 @@ class module {
         }
         return conf::getModuleIni('usage_max_bytes');
     }
-    
-    private function getPercentageTotalUsage ($user_id = 0) {
-        
-               
-    }
 }
