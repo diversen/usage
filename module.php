@@ -1,8 +1,9 @@
 <?php
 
 namespace modules\usage;
-use diversen\cache;
 
+use diversen\cache;
+use diversen\conf;
 use diversen\html\table;
 use diversen\lang;
 use diversen\moduleloader;
@@ -13,19 +14,22 @@ use modules\content\book\views;
 class module {
     
     public function __construct() {
+        moduleloader::setModuleIniSettings('usage');
         moduleloader::setModuleIniSettings('content');
     }
     
-    public $cacheExpire = 0; //60*60*24;
+    public $cacheExpire = 3600; 
     
     public function indexAction () {
+        
+        echo $this->getOverviewHtml(session::getUserId());
         
         $b = new \modules\content\book\module();
         $books = $b->getUserBooks(session::getUserId());
 
         $str = '';        
         $str.= $this->tableHeader();
-        $str.= $this->displayBooks($books);
+        $str.= $this->getTotal($books);
         $str.= $this->tableFooter();
         
         echo $str;
@@ -33,12 +37,15 @@ class module {
     }
     
     public function totalAction () {
+        
+        echo $this->getOverviewHtml();
+        
         $b = new \modules\content\book\module();
-        $books = $b->getAllBooks(0, 1000);
+        $books = $b->getAllBooks(0, 0);
         
         $str = '';        
         $str.= $this->tableHeader();
-        $str.= $this->displayBooks($books);
+        $str.= $this->getTotal($books);
         $str.= $this->tableFooter();
         
         echo $str;
@@ -47,6 +54,7 @@ class module {
     public function tableFooter () {
         $str = '';
         $str.= table::trBegin();
+        $str.= table::td();
         $str.= table::td();
         $str.= table::td();
         $str.= table::td();
@@ -65,15 +73,23 @@ class module {
         $str.= table::th(lang::translate('Videos'));
         $str.= table::th(lang::translate('Images'));
         $str.= table::th(lang::translate('Files'));
-        $str.= table::th(lang::translate('Total'));
+        $str.= table::th(lang::translate('Book Total'));
+        $str.= table::th(lang::translate('All books'));
         $str.= table::trEnd();
         
         return $str;
     }
     
     public $total = 0;
+
     
-    public function displayBooks($books) {
+    /**
+     * Get total as a display HTML string
+     * You can fetch number of total bytes from $this->total
+     * @param array $books
+     * @return string $res html
+     */
+    public function getTotal($books, $type = 'string') {
         
         $v = new \modules\video\size();
         $i = new \modules\image\size();
@@ -81,6 +97,8 @@ class module {
         
         $str = '';
         foreach ($books as $book) {
+            
+            $total_current = 0;
             $str.= table::trBegin();
 
             $title = views::getBookLink($book);
@@ -92,6 +110,7 @@ class module {
                 cache::set('usage_book_video', $book['id'], $v_b);
             }
 
+            $total_current+= $v_b;
             $this->total+= $v_b;
 
             $str.= table::td(upload::bytesToGreek($v_b));
@@ -103,6 +122,7 @@ class module {
                 cache::set('usage_book_img', $book['id'], $i_b);
             }
 
+            $total_current+= $i_b;
             $this->total+= $i_b;
 
             $str.= table::td(upload::bytesToGreek($i_b));
@@ -114,12 +134,69 @@ class module {
                 cache::set('usage_book_files', $book['id'], $f_b);
             }
 
+            $total_current+= $f_b;
             $this->total+= $f_b;
 
             $str.= table::td(upload::bytesToGreek($f_b));
-            $str.= table::td('&nbsp;');
+            $str.= table::td(upload::bytesToGreek($total_current));
+            $str.= table::td();
             $str.= table::trEnd();
         }
+        
+        if ($type == 'bytes') {
+            $total = $this->total;
+            $this->total = 0;
+            return $total;  
+        }
+
         return $str;
+        
+    }
+    
+    public function getOverviewHtml ($user_id = 0) {
+
+        $str = '';
+        $usage = $this->getTotalUsageBytes($user_id, 'bytes');
+        $str.= "<b>" . lang::translate('Total usage') . '</b>:&nbsp;' . upload::bytesToGreek($usage) . ".&nbsp;";
+        
+        $max = $this->getMaxUsageBytes($user_id);
+        $str.= "<b>" . lang::translate('Max usage') . "</b>:&nbsp;" . upload::bytesToGreek($max) . ".&nbsp;";
+        
+
+        $percentage = ($usage / $max) * 100;
+        $percentage = round($percentage, 2); 
+        
+        $str.= "<b>" .lang::translate('Percentage used') . "</b>:&nbsp;" . $percentage . ".&nbsp;";
+        return $str;
+        
+    }
+
+    
+    public function getTotalUsageBytes ($user_id = 0) {
+        $b = new \modules\content\book\module();
+        
+        if ($user_id) {
+            $books = $b->getUserBooks($user_id);
+        } else {
+            $books = $b->getAllBooks(0, 0);
+        }
+        return $this->getTotal($books, 'bytes');
+
+    }
+    
+    
+    public function getMaxUsageBytes ($user_id = 0) {
+        if ($user_id) {
+            $user_total = conf::getModuleIni('usage_user_max');
+            if (!$user_total) {
+                return conf::getModuleIni('usage_max_bytes');
+            }
+        }
+        return conf::getModuleIni('usage_max_bytes');
+    }
+    
+    private function getPercentageTotalUsage ($user_id = 0) {
+        
+               
     }
 }
