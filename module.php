@@ -189,9 +189,9 @@ class module {
         if ($user_id) {
             $user_total = conf::getModuleIni('usage_user_max');
             if (!$user_total) {
-                return conf::getModuleIni('usage_max_bytes');
+                return upload::greekToBytes(conf::getModuleIni('usage_max_bytes'));
             }
         }
-        return conf::getModuleIni('usage_max_bytes');
+        return upload::greekToBytes(conf::getModuleIni('usage_max_bytes'));
     }
 }
