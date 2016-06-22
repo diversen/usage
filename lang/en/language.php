@@ -14,7 +14,6 @@ $LANG['Images'] = 'Images';
 $LANG['Files'] = 'Files';
 $LANG['Book Total'] = 'Book Total';
 $LANG['All books'] = 'All books';
-$LANG['Usage'] = 'Usage';
 $LANG['Total usage'] = 'Total usage';
 $LANG['Max usage'] = 'Max usage';
 $LANG['Percentage used'] = 'Percentage used';
