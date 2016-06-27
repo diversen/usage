@@ -4,12 +4,15 @@ namespace modules\usage;
 
 use diversen\cache;
 use diversen\conf;
+use diversen\html;
 use diversen\html\table;
 use diversen\lang;
 use diversen\moduleloader;
 use diversen\session;
 use diversen\upload;
+use diversen\http;
 use modules\content\book\views;
+
 
 class module {
     
@@ -33,6 +36,33 @@ class module {
         $str.= $this->tableFooter();
         
         echo $str;
+        
+    }
+    
+    public function setAction () {
+        
+        if (!session::checkAccess('super')) {
+            return;
+        }
+        
+        if (isset($_POST['submit'])) {
+            $c = new \modules\configdb\module();
+            $c->set('usage_max_bytes', $_POST['usage'], 'module' );
+            $message = lang::translate('Usage setting has been updated');
+            http::locationHeader($_SERVER['REQUEST_URI'], $message);
+            
+        }
+        
+        echo lang::translate('Set max usage, e.g. 100MB of 10GB');
+        echo "<br />";
+        $f = new html();
+        $f->formStart();
+        $f->legend(lang::translate('Set usage'));
+        $f->label('usage', lang::translate('Max usage'));
+        $f->text('usage', conf::getModuleIni('usage_max_bytes'));
+        $f->submit('submit', lang::translate('Update'));
+        $f->formEnd();
+        echo $f->getStr();
         
     }
     
