@@ -17,12 +17,10 @@ use modules\content\book\views;
 class module {
     
     public function __construct() {
-        // moduleloader::setModuleIniSettings('usage');
+        
         if (!conf::getModuleIni('usage_max_bytes')) {
-            echo "SAT";
             moduleloader::setModuleIniSettings('usage');
         }
-        moduleloader::setModuleIniSettings('content');
     }
     
     
@@ -39,7 +37,7 @@ class module {
         }
     }
     
-    public $cacheExpire = 0; 
+    public $cacheExpire = 3600; 
     
     public function indexAction () {
         
@@ -61,8 +59,6 @@ class module {
         
         
         $percentage = cache::get('usage_percentage', 1, $this->cacheExpire);
-        // die;
-        // var_dump($percentage);
         if ($percentage === null) {
 
             $b = new \modules\content\book\module();
