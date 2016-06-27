@@ -17,11 +17,29 @@ use modules\content\book\views;
 class module {
     
     public function __construct() {
-        moduleloader::setModuleIniSettings('usage');
+        // moduleloader::setModuleIniSettings('usage');
+        if (!conf::getModuleIni('usage_max_bytes')) {
+            echo "SAT";
+            moduleloader::setModuleIniSettings('usage');
+        }
         moduleloader::setModuleIniSettings('content');
     }
     
-    public $cacheExpire = 3600; 
+    
+    public function getPercentageMessageColored () {
+        $total = $this->getPercentageUsageAllBooks();
+        
+        $html = $this->getOverviewHtml();
+        if ($total >= 100) {
+            return html::getError($html);
+        } else if ($total >= 80) {
+            return html::getWarning($html);
+        } else {
+            return html::getConfirm($html);
+        }
+    }
+    
+    public $cacheExpire = 0; 
     
     public function indexAction () {
         
@@ -37,6 +55,27 @@ class module {
         
         echo $str;
         
+    }
+    
+    public function getPercentageUsageAllBooks () {
+        
+        
+        $percentage = cache::get('usage_percentage', 1, $this->cacheExpire);
+        // die;
+        // var_dump($percentage);
+        if ($percentage === null) {
+
+            $b = new \modules\content\book\module();
+            $books = $b->getAllBooks(0, 0);
+            $max = $this->getMaxUsageBytes();
+            $usage = $this->getTotal($books, 'bytes');
+
+            $percentage = $this->getPercentageUsage($usage, $max);
+            cache::set('usage_percentage', 1, $percentage);
+            
+        }
+        
+        return $percentage;
     }
     
     public function setAction () {
@@ -68,7 +107,7 @@ class module {
     
     public function totalAction () {
         
-        echo $this->getOverviewHtml();
+        echo $this->getPercentageMessageColored();
         
         $b = new \modules\content\book\module();
         $books = $b->getAllBooks(0, 0);
@@ -135,7 +174,7 @@ class module {
             $str.= table::td($title); // html::getHeadline($title, 'h3');
             // Video blob
             $v_b = cache::get('usage_book_video', $book['id'], $this->cacheExpire);
-            if (!$v_b) {
+            if ($v_b === null) {
                 $v_b = $v->getFilesSizeFromParentId('content_book', $book['id']);
                 cache::set('usage_book_video', $book['id'], $v_b);
             }
@@ -147,7 +186,7 @@ class module {
 
             // Image blob
             $i_b = cache::get('usage_book_img', $book['id'], $this->cacheExpire);
-            if (!$i_b) {
+            if ($i_b === null) {
                 $i_b = $i->getBlobsSizeFromParentId($book['id']);
                 cache::set('usage_book_img', $book['id'], $i_b);
             }
@@ -159,7 +198,7 @@ class module {
 
             // File blob
             $f_b = cache::get('usage_book_files', $book['id'], $this->cacheExpire);
-            if (!$f_b) {
+            if ($f_b === null) {
                 $f_b = $f->getBlobsSizeFromParentId($book['id']);
                 cache::set('usage_book_files', $book['id'], $f_b);
             }
@@ -193,12 +232,23 @@ class module {
         $str.= "<b>" . lang::translate('Max usage') . "</b>:&nbsp;" . upload::bytesToGreek($max) . ".&nbsp;";
         
 
-        $percentage = ($usage / $max) * 100;
-        $percentage = round($percentage, 2); 
+        $percentage = $this->getPercentageUsage($usage, $max);
         
         $str.= "<b>" .lang::translate('Percentage used') . "</b>:&nbsp;" . $percentage . ".&nbsp;";
         return $str;
         
+    }
+    
+    /**
+     * Get percentage of usage
+     * @param int $usage
+     * @param int $max
+     * @return float $percentage
+     */
+    public function getPercentageUsage ($usage, $max) {
+        $percentage = ($usage / $max) * 100;
+        $percentage = round($percentage, 2); 
+        return $percentage;
     }
 
     
