@@ -19,8 +19,10 @@ class module {
     public function __construct() {
         
         if (!conf::getModuleIni('usage_max_bytes')) {
+            
             moduleloader::setModuleIniSettings('usage');
         }
+        
     }
     
     
@@ -37,7 +39,7 @@ class module {
         }
     }
     
-    public $cacheExpire = 3600; 
+    public $cacheExpire = 0; 
     
     public function indexAction () {
         

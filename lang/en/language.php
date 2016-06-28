@@ -2,6 +2,14 @@
 
 $LANG = array();
 
+// Translation of file modules/usage/cron.php
+
+$LANG['Storage quota soon to exceed'] = 'Storage quota soon to exceed';
+$LANG['Hi'] = 'Hi';
+$LANG['You have used {PERCENTAGE}% of your {MAX_GREEK} storage!'] = 'You have used {PERCENTAGE}% of your {MAX_GREEK} storage!';
+$LANG['Consider upgrading your account on {SITE}'] = 'Consider upgrading your account on {SITE}';
+$LANG['Kind regards {SITE}'] = 'Kind regards {SITE}';
+
 // Translation of file modules/usage/install.inc
 
 $LANG['Usage'] = 'Usage';
