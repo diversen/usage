@@ -11,12 +11,12 @@ use diversen\mailsmtp;
 use diversen\queue;
 use modules\configdb\module as config;
 
-class cron extends module {
+class cron extends \modules\usage\module {
 
     public $max = 80;
     
     public function __construct() {
-        parent::__construct();
+
         $c = new config();
         $c->overrideAll();
         
@@ -42,9 +42,7 @@ class cron extends module {
         $percentage = $this->getPercentageUsageAllBooks();
         if ($percentage >= $this->max) {
             $this->addToQueue($max_greek, $percentage);
-        } else {
-            echo "fine";
-        }
+        } 
     }
     
     public function addToQueue ($max_greek, $percentage) {
@@ -53,9 +51,9 @@ class cron extends module {
         $unique = "usage_notify_$max_greek";
         $res = $q->addOnce('usage', $unique);
 
-        $rows = $q->getQueueRows('usage', $unique, $done = 0);
+        $rows = $q->getQueueRows('usage', $unique);
         if (!empty($rows)) {
-            $admins = q::select('account')->filter('admin = ', 1)->fetch();
+            $admins = q::select('account')->filter('admin = ', 1)->fetch();        
             $this->sendMail($admins);
             $q->setQueueRowsDone($rows);
         } 
