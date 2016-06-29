@@ -9,7 +9,7 @@ use diversen\lang;
 use diversen\mailer\markdown;
 use diversen\mailsmtp;
 use diversen\queue;
-use modules\configdb\module as config;
+//use modules\configdb\module as config;
 
 class cron extends \modules\usage\module {
 
@@ -17,8 +17,8 @@ class cron extends \modules\usage\module {
     
     public function __construct() {
 
-        $c = new config();
-        $c->overrideAll();
+        //$c = new config();
+        //$c->overrideAll();
         
         $percentage_warning = conf::getModuleIni('usage_warning');
         if ($percentage_warning) {
