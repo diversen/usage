@@ -9,7 +9,7 @@ use diversen\html\table;
 use diversen\lang;
 use diversen\moduleloader;
 use diversen\session;
-use diversen\upload;
+use diversen\bytes;
 use diversen\http;
 use modules\content\book\views;
 
@@ -126,7 +126,7 @@ class module {
         $str.= table::td();
         $str.= table::td();
         $str.= table::td();
-        $str.= table::td(upload::bytesToGreek($this->total));
+        $str.= table::td(bytes::bytesToGreek($this->total));
         $str.= table::trEnd();
         $str.= table::tableEnd();
         return $str;
@@ -180,7 +180,7 @@ class module {
             $total_current+= $v_b;
             $this->total+= $v_b;
 
-            $str.= table::td(upload::bytesToGreek($v_b));
+            $str.= table::td(bytes::bytesToGreek($v_b));
 
             // Image blob
             $i_b = cache::get('usage_book_img', $book['id'], $this->cacheExpire);
@@ -192,7 +192,7 @@ class module {
             $total_current+= $i_b;
             $this->total+= $i_b;
 
-            $str.= table::td(upload::bytesToGreek($i_b));
+            $str.= table::td(bytes::bytesToGreek($i_b));
 
             // File blob
             $f_b = cache::get('usage_book_files', $book['id'], $this->cacheExpire);
@@ -204,8 +204,8 @@ class module {
             $total_current+= $f_b;
             $this->total+= $f_b;
 
-            $str.= table::td(upload::bytesToGreek($f_b));
-            $str.= table::td(upload::bytesToGreek($total_current));
+            $str.= table::td(bytes::bytesToGreek($f_b));
+            $str.= table::td(bytes::bytesToGreek($total_current));
             $str.= table::td();
             $str.= table::trEnd();
         }
@@ -224,10 +224,10 @@ class module {
 
         $str = '';
         $usage = $this->getTotalUsageBytes($user_id, 'bytes');
-        $str.= "<b>" . lang::translate('Total usage') . '</b>:&nbsp;' . upload::bytesToGreek($usage) . ".&nbsp;";
+        $str.= "<b>" . lang::translate('Total usage') . '</b>:&nbsp;' . bytes::bytesToGreek($usage) . ".&nbsp;";
         
         $max = $this->getMaxUsageBytes($user_id);
-        $str.= "<b>" . lang::translate('Max usage') . "</b>:&nbsp;" . upload::bytesToGreek($max) . ".&nbsp;";
+        $str.= "<b>" . lang::translate('Max usage') . "</b>:&nbsp;" . bytes::bytesToGreek($max) . ".&nbsp;";
         
 
         $percentage = $this->getPercentageUsage($usage, $max);
@@ -267,9 +267,9 @@ class module {
         if ($user_id) {
             $user_total = conf::getModuleIni('usage_user_max');
             if (!$user_total) {
-                return upload::greekToBytes(conf::getModuleIni('usage_max_bytes'));
+                return bytes::greekToBytes(conf::getModuleIni('usage_max_bytes'));
             }
         }
-        return upload::greekToBytes(conf::getModuleIni('usage_max_bytes'));
+        return bytes::greekToBytes(conf::getModuleIni('usage_max_bytes'));
     }
 }
